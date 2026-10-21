@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PiXFiX - Image compressor, converter and EXIF metadata remover." />
+  <title>PiXFiX — Image Utility</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">PiX<span>FiX</span></div>
+
+  </header>
+
+  <main class="app-shell">
+    <section class="hero-panel">
+      <div>
+        <h1>Compress. Convert. Clean.</h1>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="upload-card" id="uploadCard">
+        <input type="file" id="imageInput" accept="image/*" multiple hidden />
+        <div class="upload-icon">↑</div>
+        <h2>Drop your image here</h2>
+        <p>or choose a file from your device</p>
+        <button class="primary-btn" id="browseBtn" type="button">Choose image</button>
+        <p class="upload-note">JPG, JPEG, PNG, WebP, GIF • Max 50 MB per file</p>
+      </div>
+
+      <div class="editor hidden" id="editor">
+        <div class="editor-head">
+          <div>
+            <span class="section-kicker">SELECTED IMAGE</span>
+            <h2 id="fileName">image.jpg</h2>
+            <p id="fileInfo">0 × 0 • 0 KB</p>
+          </div>
+          <button class="ghost-btn" id="replaceBtn" type="button">Replace</button>
+        </div>
+
+        <div class="tool-tabs">
+          <button class="tool-tab active" data-tool="compress" type="button">Compress</button>
+          <button class="tool-tab" data-tool="convert" type="button">Convert</button>
+          <button class="tool-tab" data-tool="exif" type="button">EXIF</button>
+        </div>
+
+        <div class="tool-panel" id="compressPanel">
+          <div class="option-grid">
+            <div class="control-card">
+              <div class="control-title-row">
+                <label for="qualityRange">Quality</label>
+                <strong><span id="qualityValue">75</span>%</strong>
+              </div>
+              <input id="qualityRange" type="range" min="10" max="100" value="75" />
+              <div class="range-labels"><span>Smaller file</span><span>Higher quality</span></div>
+            </div>
+
+            <div class="control-card">
+              <div class="control-title-row">
+                <label>Resize</label>
+                <button class="switch active" id="lockRatio" type="button" aria-label="Lock aspect ratio"><span></span></button>
+              </div>
+              <div class="dimension-row">
+                <div>
+                  <label class="mini-label" for="widthInput">Width</label>
+                  <input type="number" id="widthInput" min="1" />
+                </div>
+                <span class="multiply">×</span>
+                <div>
+                  <label class="mini-label" for="heightInput">Height</label>
+                  <input type="number" id="heightInput" min="1" />
+                </div>
+              </div>
+              <div class="resize-actions">
+                <button class="secondary-btn" id="applySizeBtn" type="button">Apply size</button>
+                <button class="text-btn" id="cropBtn" type="button">Crop image</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="comparison-card">
+            <div class="comparison-head">
+              <div>
+                <span class="section-kicker">PREVIEW</span>
+                <h3>Before / After</h3>
+              </div>
+              <div class="size-summary">
+                <span id="beforeSize">—</span>
+                <span class="arrow">→</span>
+                <strong id="afterSize">—</strong>
+              </div>
+            </div>
+            <div class="comparison" id="comparison">
+              <img id="beforeImage" alt="Original image preview" />
+              <div class="after-layer" id="afterLayer">
+                <img id="afterImage" alt="Compressed image preview" />
+              </div>
+              <div class="comparison-line" id="comparisonLine"></div>
+              <input class="comparison-range" id="comparisonRange" type="range" min="0" max="100" value="50" aria-label="Before and after comparison" />
+              <div class="compare-label before-label">BEFORE</div>
+              <div class="compare-label after-label">AFTER</div>
+            </div>
+            <button class="primary-btn full-btn" id="downloadCompressBtn" type="button">Download compressed image</button>
+          </div>
+        </div>
+
+        <div class="tool-panel hidden" id="convertPanel">
+          <div class="convert-layout">
+            <div class="control-card">
+              <span class="section-kicker">OUTPUT FORMAT</span>
+              <h3>Convert image to</h3>
+              <div class="format-grid" id="formatGrid">
+                <button class="format-btn active" data-format="image/jpeg" type="button">JPG</button>
+                <button class="format-btn" data-format="image/png" type="button">PNG</button>
+                <button class="format-btn" data-format="image/webp" type="button">WebP</button>
+                <button class="format-btn" data-format="image/gif" type="button">GIF</button>
+              </div>
+              <div class="quality-wrap" id="convertQualityWrap">
+                <div class="control-title-row"><label for="convertQuality">Output quality</label><strong><span id="convertQualityValue">90</span>%</strong></div>
+                <input id="convertQuality" type="range" min="10" max="100" value="90" />
+              </div>
+              <p class="helper" id="gifHelper">GIF conversion creates a single-frame GIF from the selected image.</p>
+              <button class="primary-btn full-btn" id="downloadConvertBtn" type="button">Convert &amp; download</button>
+            </div>
+
+            <div class="preview-card">
+              <span class="section-kicker">PREVIEW</span>
+              <div class="large-preview"><img id="convertPreview" alt="Conversion preview" /></div>
+              <div class="preview-meta" id="convertMeta">Ready to convert</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tool-panel hidden" id="exifPanel">
+          <div class="exif-single">
+            <div class="control-card exif-card metadata-card">
+              <div class="metadata-head">
+                <div>
+                  <span class="section-kicker">IMAGE METADATA</span>
+                  <h3>Metadata to be purged</h3>
+                </div>
+                <span class="metadata-status" id="metadataStatus">Reading…</span>
+              </div>
+              <div class="metadata-table-wrap">
+                <table class="metadata-table">
+                  <tbody id="metadataTableBody"></tbody>
+                </table>
+              </div>
+              <div class="metadata-empty hidden" id="metadataEmpty">No readable EXIF metadata was found in this image.</div>
+              <button class="primary-btn" id="removeExifBtn" type="button">Remove EXIF &amp; download</button>
+            </div>
+            <div class="control-card exif-card bulk-card">
+              <div class="bulk-title-row">
+                <div>
+                  <span class="section-kicker">BULK CLEANUP</span>
+                  <h3>Clean multiple files</h3>
+                </div>
+                <span class="bulk-count" id="bulkCount">0 files</span>
+              </div>
+              <input type="file" id="bulkInput" accept="image/*" multiple hidden />
+              <button class="secondary-btn full-btn" id="bulkChooseBtn" type="button">Choose multiple images</button>
+              <div class="bulk-list" id="bulkList"></div>
+              <button class="primary-btn full-btn hidden" id="bulkDownloadBtn" type="button">Clean &amp; download all</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="message" id="message" role="status"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="cropModal" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
+    <div class="modal-card crop-modal-card">
+      <div class="modal-head">
+        <div>
+          <span class="section-kicker">OPTIONAL</span>
+          <h2 id="cropTitle">Crop image</h2>
+        </div>
+        <button class="icon-btn" id="closeCropBtn" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="crop-stage" id="cropStage">
+        <img id="cropImage" alt="Crop preview" />
+        <div class="crop-box" id="cropBox">
+          <div class="crop-handle nw"></div><div class="crop-handle ne"></div>
+          <div class="crop-handle sw"></div><div class="crop-handle se"></div>
+        </div>
+      </div>
+      <div class="crop-actions">
+        <button class="secondary-btn" id="cancelCropBtn" type="button">Cancel</button>
+        <button class="primary-btn" id="applyCropBtn" type="button">Apply crop</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
